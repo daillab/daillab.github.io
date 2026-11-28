@@ -1,0 +1,13 @@
+<li class="dail-news-item">
+  <time datetime="{{ include.item.date | escape }}">{{ include.item.date | date: '%Y.%m.%d' }}</time>
+  <div>{{ include.item.text | escape }}
+    {% if include.item.link and include.item.link != '' %}
+      {% assign prefix = include.item.link | slice: 0, 1 %}
+      {% if prefix == '/' %}
+        <a href="{{ include.item.link | relative_url | escape }}">{{ include.item.link_label | default: 'Details' | escape }}</a>
+      {% elsif include.item.link contains 'https://' %}
+        <a href="{{ include.item.link | escape }}">{{ include.item.link_label | default: 'Details' | escape }}</a>
+      {% endif %}
+    {% endif %}
+  </div>
+</li>

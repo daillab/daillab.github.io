@@ -1,0 +1,48 @@
+---
+layout: page
+title: Album
+description: Life and moments at DAIL
+permalink: /album/
+---
+<style>
+.dail-album{margin:0 0 3rem}.dail-year{display:flex;align-items:center;gap:18px;margin:30px 0 18px;font-size:28px}.dail-year:after{content:'';height:1px;background:#ddd;flex:1}.dail-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}.dail-card{display:block;width:100%;text-align:left;background:#fff;border:1px solid #e0e4e8;border-radius:8px;overflow:hidden;padding:0;color:#222;cursor:pointer;transition:box-shadow .2s,transform .2s;font:inherit}.dail-card:hover{box-shadow:0 6px 20px #0002;transform:translateY(-2px)}.dail-card:focus-visible,.dail-dialog button:focus-visible{outline:3px solid #3280bb;outline-offset:2px}.dail-cover{width:100%;aspect-ratio:16/10;object-fit:cover;display:block;background:#eee}.dail-info{padding:14px}.dail-info time,.dail-count{display:block;font-size:13px;color:#68717a}.dail-info h3{font-size:18px;line-height:1.35;margin:8px 0 12px;overflow-wrap:anywhere}.dail-dialog{border:0;border-radius:10px;padding:0;width:min(960px,94vw);max-height:92vh;color:#222;background:#fff;overflow:auto}.dail-dialog::backdrop{background:#000c}.dail-modal-head{display:flex;align-items:start;gap:16px;padding:18px 22px}.dail-modal-head h2{font-size:22px;margin:0 0 4px}.dail-modal-head time{font-size:14px;color:#68717a}.dail-close{margin-left:auto}.dail-dialog button{cursor:pointer}.dail-close,.dail-nav button{border:0;border-radius:5px;background:#eee;color:#222;font-size:24px;min-width:40px;min-height:40px}.dail-stage{background:#171717;display:flex;justify-content:center;align-items:center;height:min(52vh,520px)}.dail-stage img{width:100%;height:100%;object-fit:contain}.dail-nav{display:flex;align-items:center;justify-content:space-between;background:#171717;color:white;padding:8px 16px;font-size:14px}.dail-thumbs{display:flex;gap:8px;padding:12px 22px;overflow:auto}.dail-thumbs button{padding:0;border:2px solid transparent;border-radius:4px;background:none;flex:0 0 80px;overflow:hidden}.dail-thumbs button[aria-current=true]{border-color:#1678b8}.dail-thumbs img{display:block;width:100%;height:54px;object-fit:cover}.dail-description{padding:0 22px 18px;margin:0!important;font-size:16px;line-height:1.6}@media(max-width:991px){.dail-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:575px){.dail-grid{grid-template-columns:1fr}.dail-modal-head{padding:12px}.dail-modal-head h2{font-size:18px}}@media(prefers-reduced-motion:reduce){.dail-card{transition:none}}
+</style>
+<section class="dail-album" aria-label="Lab albums">
+{% assign albums = site.data.albums | sort: 'date' | reverse %}
+{% assign years = albums | group_by_exp: 'album', 'album.date | date: "%Y"' %}
+{% for year in years %}
+<h2 class="dail-year">{{ year.name }}</h2>
+<div class="dail-grid">
+{% for album in year.items %}
+{% assign folder = '/img/album/' | append: album.folder | append: '/' %}
+<button class="dail-card" type="button" data-album="{{ album.folder | escape }}" aria-haspopup="dialog">
+<img class="dail-cover" src="{{ folder | append: album.cover | relative_url }}" alt="" style="object-position:{{ album.cover_position | default: '50% 50%' | escape }}" loading="lazy">
+<div class="dail-info"><time datetime="{{ album.date }}">{{ album.date | date: '%B %d, %Y' }}</time><h3>{{ album.title | escape }}</h3><span class="dail-count">{{ album.photos.size }} photos</span></div>
+</button>
+<template id="dail-{{ album.folder | escape }}">
+<h2>{{ album.title | escape }}</h2><time datetime="{{ album.date }}">{{ album.date | date: '%B %d, %Y' }}</time><p>{{ album.description | escape }}</p>
+{% for photo in album.photos %}<img data-src="{{ folder | append: photo | relative_url }}" alt="{{ album.title | escape }} — photo {{ forloop.index }}">{% endfor %}
+</template>
+{% endfor %}
+</div>
+{% endfor %}
+</section>
+<dialog class="dail-dialog" id="dail-dialog" aria-labelledby="dail-modal-title">
+<div class="dail-modal-head"><div><h2 id="dail-modal-title"></h2><time id="dail-modal-date"></time></div><button type="button" class="dail-close" aria-label="Close album">&times;</button></div>
+<div class="dail-stage"><img id="dail-main-photo" alt=""></div>
+<div class="dail-nav"><button type="button" id="dail-prev" aria-label="Previous photo">&#8249;</button><span id="dail-index" aria-live="polite"></span><button type="button" id="dail-next" aria-label="Next photo">&#8250;</button></div>
+<div class="dail-thumbs" id="dail-thumbs"></div><p class="dail-description" id="dail-desc"></p>
+</dialog>
+<script>
+(function(){
+'use strict';
+const dialog=document.getElementById('dail-dialog'), main=document.getElementById('dail-main-photo'), thumbs=document.getElementById('dail-thumbs'), prev=document.getElementById('dail-prev'), next=document.getElementById('dail-next');
+let photos=[], index=0, opener=null, oldOverflow='';
+function show(i){if(!photos.length)return;index=(i+photos.length)%photos.length;main.src=photos[index].dataset.src;main.alt=photos[index].alt;document.getElementById('dail-index').textContent=(index+1)+' / '+photos.length;Array.from(thumbs.children).forEach((b,j)=>b.setAttribute('aria-current',String(j===index)));}
+document.querySelectorAll('.dail-card').forEach(card=>card.addEventListener('click',()=>{
+const t=document.getElementById('dail-'+card.dataset.album).content;photos=Array.from(t.querySelectorAll('img'));if(!photos.length)return;opener=card;
+document.getElementById('dail-modal-title').textContent=t.querySelector('h2').textContent;const date=document.getElementById('dail-modal-date');date.textContent=t.querySelector('time').textContent;date.dateTime=t.querySelector('time').dateTime;document.getElementById('dail-desc').textContent=t.querySelector('p').textContent;
+thumbs.replaceChildren();photos.forEach((p,j)=>{const b=document.createElement('button'), im=document.createElement('img');b.type='button';b.setAttribute('aria-label','Show photo '+(j+1));im.src=p.dataset.src;im.alt='';b.append(im);b.addEventListener('click',()=>show(j));thumbs.append(b);});prev.disabled=next.disabled=photos.length<2;show(0);dialog.showModal();oldOverflow=document.body.style.overflow;document.body.style.overflow='hidden';dialog.querySelector('.dail-close').focus();}));
+prev.addEventListener('click',()=>show(index-1));next.addEventListener('click',()=>show(index+1));dialog.querySelector('.dail-close').addEventListener('click',()=>dialog.close());dialog.addEventListener('click',e=>{if(e.target===dialog){const r=dialog.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)dialog.close();}});dialog.addEventListener('keydown',e=>{if(e.key==='ArrowLeft'||e.key==='ArrowRight'){e.preventDefault();show(index+(e.key==='ArrowLeft'?-1:1));}});dialog.addEventListener('close',()=>{document.body.style.overflow=oldOverflow;if(opener)opener.focus();});
+})();
+</script>

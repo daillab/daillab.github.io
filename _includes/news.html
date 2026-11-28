@@ -1,0 +1,24 @@
+{% assign news = site.data.news | sort: 'date' | reverse %}
+{% if news.size > 0 %}
+<style>
+.dail-news{margin:0 0 3rem;color:inherit}.dail-news h2{font-size:28px;margin:0 0 14px;padding-bottom:12px;border-bottom:2px solid #263b50}.dail-news-list{list-style:none;margin:0;padding:0}.dail-news-item{display:grid;grid-template-columns:86px minmax(0,1fr);gap:14px;padding:13px 0;border-bottom:1px solid #e2e5e8;font-size:16px;line-height:1.55}.dail-news-item time{font-size:14px;font-weight:600;color:#65717c;padding-top:2px;white-space:nowrap}.dail-news-item a{color:#17658e;text-decoration:underline;text-underline-offset:3px;white-space:nowrap}.dail-news details{margin-top:12px}.dail-news summary{cursor:pointer;font-size:14px;color:#526474;text-align:right}.dail-news summary:focus-visible{outline:2px solid #17658e;outline-offset:4px}@media(max-width:575px){.dail-news-item{grid-template-columns:1fr;gap:3px;padding:12px 0}}
+</style>
+<section class="dail-news" aria-labelledby="dail-news-title">
+  <h2 id="dail-news-title">News</h2>
+  <ul class="dail-news-list">
+    {% for item in news limit:5 %}
+      {% include news-item.html item=item %}
+    {% endfor %}
+  </ul>
+  {% if news.size > 5 %}
+  <details>
+    <summary>Show older news</summary>
+    <ul class="dail-news-list">
+      {% for item in news offset:5 %}
+        {% include news-item.html item=item %}
+      {% endfor %}
+    </ul>
+  </details>
+  {% endif %}
+</section>
+{% endif %}

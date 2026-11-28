@@ -27,6 +27,9 @@
           <a class="nav-link" href="{{ '/projects' | relative_url }}">Projects</a>
         </li>
         <li class="nav-item">
+          <a class="nav-link" href="{{ '/album/' | relative_url }}"{% if page.url == '/album/' %} aria-current="page"{% endif %}>Album</a>
+        </li>
+        <li class="nav-item">
           <a class="nav-link" href="{{"/contact" | relative_url }}">Contact</a>
         </li>
       </ul>
