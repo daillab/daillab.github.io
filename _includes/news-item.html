@@ -1,5 +1,5 @@
 <li class="dail-news-item">
-  <time datetime="{{ include.item.date | escape }}">{{ include.item.date | date: '%Y.%m.%d' }}</time>
+  <time datetime="{{ include.item.date | escape }}">{{ include.item.date | date: '%Y.%m' }}</time>
   <div>{{ include.item.text | escape }}
     {% if include.item.link and include.item.link != '' %}
       {% assign prefix = include.item.link | slice: 0, 1 %}

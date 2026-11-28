@@ -17,10 +17,10 @@ permalink: /album/
 {% assign folder = '/img/album/' | append: album.folder | append: '/' %}
 <button class="dail-card" type="button" data-album="{{ album.folder | escape }}" aria-haspopup="dialog">
 <img class="dail-cover" src="{{ folder | append: album.cover | relative_url }}" alt="" style="object-position:{{ album.cover_position | default: '50% 50%' | escape }}" loading="lazy">
-<div class="dail-info"><time datetime="{{ album.date }}">{{ album.date | date: '%B %d, %Y' }}</time><h3>{{ album.title | escape }}</h3><span class="dail-count">{{ album.photos.size }} photos</span></div>
+<div class="dail-info"><time datetime="{{ album.date }}">{{ album.date | date: '%Y.%m' }}</time><h3>{{ album.title | escape }}</h3><span class="dail-count">{{ album.photos.size }} photos</span></div>
 </button>
 <template id="dail-{{ album.folder | escape }}">
-<h2>{{ album.title | escape }}</h2><time datetime="{{ album.date }}">{{ album.date | date: '%B %d, %Y' }}</time><p>{{ album.description | escape }}</p>
+<h2>{{ album.title | escape }}</h2><time datetime="{{ album.date }}">{{ album.date | date: '%Y.%m' }}</time><p>{{ album.description | escape }}</p>
 {% for photo in album.photos %}<img data-src="{{ folder | append: photo | relative_url }}" alt="{{ album.title | escape }} — photo {{ forloop.index }}">{% endfor %}
 </template>
 {% endfor %}

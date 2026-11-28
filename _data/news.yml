@@ -2,3 +2,13 @@
   text: "DAIL members received an Excellence Award (최우수상) at the 2026 Ajou University–Hanbat National University Joint Capstone Design Competition."
   link: "/album/"
   link_label: "Photos"
+
+- date: "2026-11-01"
+  text: 'Our paper entitled "Quantization-Robust Knowledge Distillation via Margin-Guided Consistency" has been accepted for publication in Knowledge-Based Systems.'
+  link: "/publications"
+  link_label: "Publications"
+
+- date: "2026-09-01"
+  text: "DAIL has been awarded a five-year research grant from the National Research Foundation of Korea (NRF) to develop multimodal model compression techniques."
+  link: "/projects"
+  link_label: "Projects"
